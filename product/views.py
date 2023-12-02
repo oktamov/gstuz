@@ -1,6 +1,6 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from .models import Product
@@ -22,6 +22,9 @@ class ProductView(generics.ListAPIView):
 
         if product_id:
             queryset = Product.objects.get(id=product_id)
+            if not queryset.exists():
+                return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
             serializer = ProductDetailSerializer(queryset)
         elif news:
             queryset = Product.objects.order_by('-created_at')[:2]

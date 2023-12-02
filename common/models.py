@@ -75,10 +75,3 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
-
-class VerificationCode(models.Model):
-    phone_number = models.CharField(max_length=15)
-    code = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.phone_number

@@ -45,6 +45,8 @@ class DocumentCustomFilterView(generics.ListAPIView):
 
         if document_type:
             queryset = Document.objects.filter(type=document_type)
+            if not queryset.exists():
+                return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         else:
             queryset = Document.objects.all()
 
