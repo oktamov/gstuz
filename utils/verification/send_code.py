@@ -5,8 +5,6 @@ import requests
 from django.conf import settings
 from django.utils.crypto import get_random_string
 
-from common.models import VerificationCode
-
 
 def send_verification_code(phone_number):
     url = "https://notify.eskiz.uz/api/message/sms/send"
