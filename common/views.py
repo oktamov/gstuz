@@ -3,8 +3,6 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from product.models import Product
-from product.serializers import ProductSerializer
 from utils.verification import send_verification_code
 from .models import Category, Document, Form, Company
 from .serializers import CategorySerializer, DocumentSerializer, FormSerializer, CompanySerializer, \
@@ -13,23 +11,7 @@ from .serializers import CategorySerializer, DocumentSerializer, FormSerializer,
 
 class CategoryView(generics.ListAPIView):
     serializer_class = CategorySerializer
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('id', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING),
-        ]
-    )
-    def get(self, request, *args, **kwargs):
-        category_id = self.request.query_params.get('id', None)
-
-        if category_id:
-            queryset = Product.objects.filter(category_id=category_id)
-            serializer = ProductSerializer(queryset, many=True)
-        else:
-            queryset = Category.objects.all()
-            serializer = CategorySerializer(queryset, many=True)
-
-        return Response(serializer.data)
+    queryset = Category.objects.all()
 
 
 class DocumentCustomFilterView(generics.ListAPIView):
@@ -48,7 +30,9 @@ class DocumentCustomFilterView(generics.ListAPIView):
             if not queryset.exists():
                 return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         else:
-            queryset = Document.objects.all()
+            return Response({
+                                'types': f'{Document.DocumentTypes.DOCUMENT}, {Document.DocumentTypes.CERTIFICATE}'
+                                         f', {Document.DocumentTypes.PROJECT}'})
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
